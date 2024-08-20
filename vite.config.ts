@@ -8,6 +8,7 @@ import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/research/',
   plugins: [vue(), vueJsx(), Components({ resolvers: [AntDesignVueResolver({ importStyle: false })], dts: false })],
   resolve: {
     alias: {
