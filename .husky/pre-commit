@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# TS类型检查，需要检查项目的所有文件；如果只检查提交的文件，会缺少依赖的文件
+npm run type-check
+
+# eslint检查，只检查提交的文件
+npx lint-staged
