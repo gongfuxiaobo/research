@@ -6,6 +6,11 @@
       <a-button type="primary" size="large" class="col-span-1" @click="handleGoPage('/cos')">余弦函数</a-button>
       <a-button type="primary" size="large" class="col-span-1" @click="handleGoPage('/rain')">数字雨</a-button>
       <a-button type="primary" size="large" class="col-span-1" @click="handleGoPage('/input')">输入</a-button>
+      <a-button type="primary" size="large" class="col-span-1" @click="handleGoPage('/shark')">扫光</a-button>
+      <a-button type="primary" size="large" class="col-span-1" @click="handleGoPage('/triangle')">三角形</a-button>
+      <a-button type="primary" size="large" class="col-span-1" @click="handleGoPage('/binaryTree')">二叉树</a-button>
+      <a-button type="primary" size="large" class="col-span-1" @click="handleGoPage('/form')">表单</a-button>
+      <a-button type="primary" size="large" class="col-span-1" @click="handleGoPage('/k8s')">k8s</a-button>
     </div>
   </div>
 </template>

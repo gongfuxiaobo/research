@@ -42,13 +42,7 @@ export default ({ mode }: { mode: string }) => {
       preprocessorOptions: {
         less: {
           javascriptEnabled: true, //注意，这一句是在less对象中，写在外边不起作用
-          modifyVars: {
-            //在这里进行主题的修改，参考官方配置属性
-            '@primary-color': '#FF6F32', // 全局主色
-            '@success-color': '#2DAD69', // 成功色
-            '@warning-color': '#FFA623', // 警告色
-            '@error-color': '#FF3B30' // 错误色
-          }
+          modifyVars: {}
         },
         locale: 'zh-cn'
       }

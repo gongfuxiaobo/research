@@ -5,13 +5,12 @@ import type { Digits, Digit } from '@/views/rain/types/types';
  * 数字雨
  */
 export default class Rain extends Canvas {
-  public space: number = 50; // 振幅
   public speed: number = 1; // 速度
   public fontSize: number = 16; // 文字大小
-  public status: string = 'draw'; // 动画状态
   public digits: Digits[] = []; // 数字数据
   public text: number = 10; // 文字
-  public opacity: number = 10; // 透明度
+  public opacity: number = 10; // 透明度速度
+  public rate: number = 1; // 频率
 
   constructor(data: {
     id: string; // 画布ID
@@ -22,17 +21,12 @@ export default class Rain extends Canvas {
 
   /**
    * 绘制
-   * @returns
    */
   public draw(): void {
-    if (!this.context) {
-      return;
-    }
-    this.clear();
-    this.resize();
+    super.draw();
     this.reset();
     this.initDigit();
-    this.loop();
+    this.requestAnimation();
   }
 
   /**
@@ -40,14 +34,6 @@ export default class Rain extends Canvas {
    */
   public reset(): void {
     this.digits = [];
-  }
-
-  /**
-   * 重绘
-   */
-  public redraw(): void {
-    this.status = 'resize';
-    this.draw();
   }
 
   /**
@@ -67,13 +53,15 @@ export default class Rain extends Canvas {
           text: this.getRandomText(),
           opacity: 0,
           index: y,
-          speed: 1
+          speed: this.rate
         });
       }
       digits.push({
-        speed: 1,
+        speed: this.speed,
+        rate: this.rate,
         index: 0,
         length: yNum,
+        isRefresh: false,
         list
       });
     }
@@ -83,14 +71,10 @@ export default class Rain extends Canvas {
   /**
    * 循环
    */
-  public loop(): void {
-    if (this.status === 'draw') {
-      this.clear();
-      this.drawDigit();
-      this.requestAnimation(() => this.loop());
-    } else if (this.status === 'resize') {
-      this.status = 'draw';
-    }
+  public requestAnimation(): void {
+    this.clear();
+    this.drawDigit();
+    super.requestAnimation();
   }
 
   /**
@@ -99,8 +83,8 @@ export default class Rain extends Canvas {
   public drawDigit(): void {
     this.digits.forEach((item: Digits) => {
       item.list.forEach((digit: Digit) => {
-        if (digit.opacity - digit.speed > 0) {
-          digit.opacity -= digit.speed;
+        if (digit.opacity - digit.speed > 0 && item.index % 2 === 0) {
+          digit.opacity = digit.opacity - digit.speed;
         }
         if (item.index === digit.index) {
           digit.opacity = this.opacity;
@@ -109,9 +93,9 @@ export default class Rain extends Canvas {
         this.drawText(digit);
       });
       if (item.index + item.speed > item.list.length) {
-        item.index = Math.floor(2 * (Math.random() * this.opacity * 2) - this.opacity * 2);
+        item.index = Math.floor(Math.random() * -item.length);
       } else {
-        item.index += item.speed;
+        item.index = item.index + item.speed;
       }
     });
   }
@@ -129,7 +113,7 @@ export default class Rain extends Canvas {
     this.context.textBaseline = 'middle';
     this.context.shadowColor = 'rgba(0, 255, 0, 0.5)';
     this.context.shadowBlur = this.fontSize * 2;
-    this.context.fillStyle = `rgba(0, 255, 0, ${digit.opacity / this.opacity})`;
+    this.context.fillStyle = `rgba(0, 255, 0, ${this.getDecimal(digit.opacity / this.opacity)})`;
     this.context.fillText(digit.text, digit.x, digit.y);
   }
 
@@ -140,5 +124,15 @@ export default class Rain extends Canvas {
   public getRandomText(): string {
     // return String.fromCharCode(Math.random() * (0x9fa5 - 0x4e00) + 0x4e00);
     return Math.floor(Math.random() * this.text).toString();
+  }
+
+  /**
+   * 获取整数
+   * @param decimal 小数
+   * @param digit 位数
+   * @returns
+   */
+  public getDecimal(decimal: number, digit: number = 1): number {
+    return Number(decimal.toFixed(digit));
   }
 }

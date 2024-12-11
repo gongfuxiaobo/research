@@ -48,5 +48,45 @@ export const routeConfig: RouteConfig[] = [
     meta: {
       title: '输入'
     }
+  },
+  {
+    path: 'shark',
+    name: 'shark',
+    component: () => import('@/views/shark/shark.vue'),
+    meta: {
+      title: '扫光'
+    }
+  },
+  {
+    path: 'triangle',
+    name: 'triangle',
+    component: () => import('@/views/triangle/triangle.vue'),
+    meta: {
+      title: '三角形'
+    }
+  },
+  {
+    path: 'binaryTree',
+    name: 'binaryTree',
+    component: () => import('@/views/binaryTree/binaryTree.vue'),
+    meta: {
+      title: '二叉树'
+    }
+  },
+  {
+    path: 'form',
+    name: 'form',
+    component: () => import('@/views/form/form.vue'),
+    meta: {
+      title: '表单'
+    }
+  },
+  {
+    path: 'k8s',
+    name: 'k8s',
+    component: () => import('@/views/k8s/k8s.vue'),
+    meta: {
+      title: 'k8s'
+    }
   }
 ];

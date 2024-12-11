@@ -1,9 +1,9 @@
 import { EnumAnimationStatusType } from '@/types/Canvas/types';
 
 /**
- * 画布
+ * 父类
  */
-export default class Canvas {
+export default class Parent {
   public canvas?: HTMLCanvasElement; // 画布对象
   public context?: CanvasRenderingContext2D; // 画布的上下文对象
   public width: number = 0; // 画布宽度
@@ -13,6 +13,12 @@ export default class Canvas {
   public animation?: number; // 动画对象
   public isSetOrigin?: boolean = false; // 是否设置原点
   public status: EnumAnimationStatusType = EnumAnimationStatusType.Start; // 动画状态
+  public originX: number = 0; // 原点x坐标
+  public originY: number = 0; // 原点y坐标
+  public scale: number = 1; // 缩放比例
+  public scaleFactor: number = 1.1; // 缩放因子
+  public static Min_Scale: number = 0.1; // 最小缩放比例
+  public static Max_Scale: number = 4; // 最大缩放比例
 
   constructor(data: {
     id: string; // 画布ID
@@ -30,6 +36,26 @@ export default class Canvas {
       throw new Error('画布上下文对象初始化失败');
     }
     this.isSetOrigin = data.isSetOrigin;
+    this.init();
+  }
+
+  /**
+   * 初始化
+   */
+  public init() {
+    this.resize();
+    this.draw();
+    this.listener();
+  }
+
+  /**
+   * 监听器
+   */
+  public listener(): void {
+    this.canvas?.addEventListener('wheel', (event: WheelEvent) => this.wheel(event));
+    window.addEventListener('resize', () => {
+      this.redraw();
+    });
   }
 
   /**
@@ -57,7 +83,7 @@ export default class Canvas {
       return;
     }
     this.clear();
-    this.resize();
+    this.create();
   }
 
   /**
@@ -65,6 +91,7 @@ export default class Canvas {
    */
   public redraw(): void {
     this.cancelAnimation();
+    this.resize();
     this.draw();
   }
 
@@ -79,6 +106,8 @@ export default class Canvas {
     this.context.save();
     this.context.setTransform(1, 0, 0, 1, 0, 0);
     this.context.translate(this.halfWidth, this.halfHeight);
+    this.originX = this.halfWidth;
+    this.originY = this.halfHeight;
   }
 
   /**
@@ -89,11 +118,10 @@ export default class Canvas {
     if (!this.context) {
       return;
     }
-    if (this.isSetOrigin) {
-      this.context.clearRect(-this.halfWidth, -this.halfHeight, this.width, this.height);
-    } else {
-      this.context.clearRect(0, 0, this.width, this.height);
-    }
+    this.context.save();
+    this.context.setTransform(1, 0, 0, 1, 0, 0);
+    this.context.clearRect(0, 0, this.width, this.height);
+    this.context.restore();
   }
 
   /**
@@ -144,5 +172,66 @@ export default class Canvas {
       this.canvas = undefined;
       this.context = undefined;
     }
+  }
+
+  /**
+   * 鼠标滚动
+   */
+  public wheel(event: WheelEvent) {
+    event.preventDefault();
+    if (!this.canvas || !this.context) {
+      return;
+    }
+    if (event.ctrlKey) {
+      const rect: DOMRect = this.canvas.getBoundingClientRect();
+      const mouseX: number = event.clientX - rect.left;
+      const mouseY: number = event.clientY - rect.top;
+      if (event.deltaY < 0) {
+        if (this.scale * this.scaleFactor <= Parent.Max_Scale) {
+          this.scale *= this.scaleFactor;
+          this.originX = mouseX - (mouseX - this.originX) * this.scaleFactor;
+          this.originY = mouseY - (mouseY - this.originY) * this.scaleFactor;
+        }
+      } else {
+        if (this.scale / this.scaleFactor >= Parent.Min_Scale) {
+          this.scale /= this.scaleFactor;
+          this.originX = mouseX - (mouseX - this.originX) / this.scaleFactor;
+          this.originY = mouseY - (mouseY - this.originY) / this.scaleFactor;
+        }
+      }
+    } else {
+      this.originX -= event.deltaX * this.scale;
+      this.originY -= event.deltaY * this.scale;
+    }
+    this.context.setTransform(this.scale, 0, 0, this.scale, this.originX, this.originY);
+    this.draw();
+  }
+
+  /**
+   * 预加载
+   */
+  public preload() {
+    console.log('parent preload');
+  }
+
+  /**
+   * 创建
+   */
+  public create() {
+    console.log('parent create');
+  }
+
+  /**
+   * 更新
+   */
+  public update() {
+    console.log('parent update');
+  }
+
+  /**
+   * 键盘
+   */
+  public keyload() {
+    console.log('parent keyload');
   }
 }

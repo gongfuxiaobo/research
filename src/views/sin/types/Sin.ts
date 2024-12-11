@@ -30,7 +30,6 @@ export default class Sin extends Canvas {
       y: 0
     }
   }; // 右方向曲线数据
-  public status: string = 'init'; // 动画状态
 
   constructor(data: {
     id: string; // 画布ID
@@ -44,21 +43,15 @@ export default class Sin extends Canvas {
 
   /**
    * 绘制
-   * @returns
    */
   public draw(): void {
-    if (!this.context) {
-      return;
-    }
-    this.clear();
-    this.resize();
+    super.draw();
     this.reset();
     this.drawGrid();
     this.drawAxes();
     this.drawOrigin();
     this.drawCoordinates();
-    this.status = 'draw';
-    this.loop();
+    this.requestAnimation();
   }
 
   /**
@@ -87,14 +80,6 @@ export default class Sin extends Canvas {
         y: 0
       }
     };
-  }
-
-  /**
-   * 重绘
-   */
-  public redraw(): void {
-    this.status = 'resize';
-    this.draw();
   }
 
   /**
@@ -211,15 +196,10 @@ export default class Sin extends Canvas {
   /**
    * 循环
    */
-  public loop(): void {
-    if (this.status === 'draw') {
-      this.drawLine(this.right);
-      this.drawLine(this.left);
-      this.requestAnimation(() => this.loop());
-    } else if (this.status === 'end') {
-      this.status = 'redraw';
-      this.draw();
-    }
+  public requestAnimation(): void {
+    this.drawLine(this.right);
+    this.drawLine(this.left);
+    super.requestAnimation();
   }
 
   /**
@@ -231,7 +211,8 @@ export default class Sin extends Canvas {
       return;
     }
     if (curve.end.x > this.halfWidth || curve.end.x < -this.halfWidth) {
-      this.status = 'end';
+      this.cancelAnimation();
+      return;
     }
     curve.end.x += curve.v * this.speed;
     curve.end.y = -Math.sin((curve.end.x / (this.space * 2)) * Math.PI) * this.space;
