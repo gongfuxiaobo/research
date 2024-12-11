@@ -5,7 +5,7 @@
 </template>
 <script setup lang="ts">
 import K8s from '@/views/k8s/types/K8s';
-import Resource from '@/views/k8s/types/Resource1';
+import Resource from '@/views/k8s/types/Resource';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 const canvas = ref<Resource | undefined>(undefined);
